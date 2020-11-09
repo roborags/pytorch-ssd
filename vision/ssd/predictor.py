@@ -26,12 +26,15 @@ class Predictor:
 
         self.timer = Timer()
 
-    def predict(self, image, top_k=-1, prob_threshold=None):
-        cpu_device = torch.device("cpu")
+    def predict(self, image, top_k=-1, prob_threshold=None, img_preproc=None):
+        cpu_device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         height, width, _ = image.shape
-        image = self.transform(image)
-        images = image.unsqueeze(0)
-        images = images.to(self.device)
+        if not img_preproc:
+            image = self.transform(image)
+            images = image.unsqueeze(0)
+            images = images.to(self.device)
+        print(images.shape)
+
         with torch.no_grad():
             self.timer.start()
             scores, boxes = self.net.forward(images)

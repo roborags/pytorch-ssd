@@ -32,6 +32,8 @@ parser.add_argument("--dataset_type", default="voc", type=str,
 
 parser.add_argument('--datasets', nargs='+', help='Dataset directory path')
 parser.add_argument('--validation_dataset', help='Dataset directory path')
+parser.add_argument('--datasets_ann', nargs='+', help='Dataset Annotation directory path')
+parser.add_argument('--validation_dataset_ann', help='Dataset Annotation directory path')
 parser.add_argument('--balance_data', action='store_true',
                     help="Balance training data by down-sampling more frequent labels.")
 
@@ -215,9 +217,8 @@ if __name__ == '__main__':
             logging.info(dataset)
             num_classes = len(dataset.class_names)
         elif args.dataset_type == 'coco':
-            dataset = CocoDataset(dataset_path,
-                 transform=train_transform, target_transform=target_transform,
-                 dataset_type="train", balance_data=args.balance_data)
+            dataset = CocoDataset(dataset_path,args.datasets_ann,
+                 transform=train_transform, target_transform=target_transform)
             #label_file = os.path.join(args.checkpoint_folder, "open-images-model-labels.txt")
             #store_labels(label_file, dataset.class_names)
             logging.info(dataset)
@@ -240,6 +241,9 @@ if __name__ == '__main__':
         val_dataset = OpenImagesDataset(dataset_path,
                                         transform=test_transform, target_transform=target_transform,
                                         dataset_type="test")
+    elif args.dataset_type == 'coco':
+        val_dataset = CocoDataset(args.validation_dataset, args.validation_dataset_ann,
+                                  transform=test_transform, target_transform=target_transform)
         logging.info(val_dataset)
     logging.info("validation dataset size: {}".format(len(val_dataset)))
 

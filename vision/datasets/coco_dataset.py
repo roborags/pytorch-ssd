@@ -7,8 +7,7 @@ from pycocotools.coco import COCO
 
 class CocoDataset(torch.utils.data.Dataset):
     def __init__(self, root, annotation,
-        transform=None, target_transform=None, 
-        label_file=None):
+        transform=None, target_transform=None):
 
         self.root = root
         self.transform = transform

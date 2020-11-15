@@ -7,17 +7,26 @@ from pycocotools.coco import COCO
 
 class CocoDataset(torch.utils.data.Dataset):
     def __init__(self, root, annotation,
-        transform=None, target_transform=None):
+        transform=None, target_transform=None, isTrain=True):
 
-        self.root = root
+        if isTrain:
+            self.root     = root + str("train_2017/")
+            self.annpath  = root + str("annotations/instances_train2017.json")
+        else:
+            self.root     = root + str("val_2017/")
+            self.annpath  = root + str("annotations/instances_val2017.json")     
+        print(self.root)
+        print(self.annpath)
+
         self.transform = transform
         self.target_transform = target_transform
-        self.coco = COCO(annotation)
+
+        self.coco = COCO(annotation_file=self.annpath)
         self.ids = list(sorted(self.coco.imgs.keys()))
 
-        cats = coco.loadCats(coco.getCatIds())
+        cats = self.coco.loadCats(self.coco.getCatIds())
         self.class_names=[cat['name'] for cat in cats]
-
+        
     def get_image(self, index):
         image_id = self.ids[index]
         coco = self.coco

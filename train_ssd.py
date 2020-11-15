@@ -218,7 +218,7 @@ if __name__ == '__main__':
             num_classes = len(dataset.class_names)
         elif args.dataset_type == 'coco':
             dataset = CocoDataset(dataset_path,args.datasets_ann,
-                 transform=train_transform, target_transform=target_transform)
+                 transform=train_transform, target_transform=target_transform,isTrain=True)
             #label_file = os.path.join(args.checkpoint_folder, "open-images-model-labels.txt")
             #store_labels(label_file, dataset.class_names)
             logging.info(dataset)
@@ -227,7 +227,7 @@ if __name__ == '__main__':
         else:
             raise ValueError(f"Dataset type {args.dataset_type} is not supported.")
         datasets.append(dataset)
-    logging.info(f"Stored labels into file {label_file}.")
+    #logging.info(f"Stored labels into file {label_file}.")
     train_dataset = ConcatDataset(datasets)
     logging.info("Train dataset size: {}".format(len(train_dataset)))
     train_loader = DataLoader(train_dataset, args.batch_size,
@@ -243,7 +243,7 @@ if __name__ == '__main__':
                                         dataset_type="test")
     elif args.dataset_type == 'coco':
         val_dataset = CocoDataset(args.validation_dataset, args.validation_dataset_ann,
-                                  transform=test_transform, target_transform=target_transform)
+                                  transform=test_transform, target_transform=target_transform,isTrain=False)
         logging.info(val_dataset)
     logging.info("validation dataset size: {}".format(len(val_dataset)))
 

@@ -14,7 +14,6 @@ class CocoDataset(torch.utils.data.Dataset):
         self.target_transform = target_transform
         self.coco = COCO(annotation)
         self.ids = list(sorted(self.coco.imgs.keys()))
-        self.keep_difficult = keep_difficult
 
         cats = coco.loadCats(coco.getCatIds())
         self.class_names=[cat['name'] for cat in cats]

@@ -17,6 +17,7 @@ from vision.ssd.mobilenet_v2_ssd_lite import create_mobilenetv2_ssd_lite
 from vision.ssd.squeezenet_ssd_lite import create_squeezenet_ssd_lite
 from vision.datasets.voc_dataset import VOCDataset
 from vision.datasets.open_images import OpenImagesDataset
+from vision.datasets.coco_dataset import CocoDataset
 from vision.nn.multibox_loss import MultiboxLoss
 from vision.ssd.config import vgg_ssd_config
 from vision.ssd.config import mobilenetv1_ssd_config
@@ -211,6 +212,14 @@ if __name__ == '__main__':
                  dataset_type="train", balance_data=args.balance_data)
             label_file = os.path.join(args.checkpoint_folder, "open-images-model-labels.txt")
             store_labels(label_file, dataset.class_names)
+            logging.info(dataset)
+            num_classes = len(dataset.class_names)
+        elif args.dataset_type == 'coco':
+            dataset = CocoDataset(dataset_path,
+                 transform=train_transform, target_transform=target_transform,
+                 dataset_type="train", balance_data=args.balance_data)
+            #label_file = os.path.join(args.checkpoint_folder, "open-images-model-labels.txt")
+            #store_labels(label_file, dataset.class_names)
             logging.info(dataset)
             num_classes = len(dataset.class_names)
 

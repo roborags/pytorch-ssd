@@ -4,16 +4,18 @@ import torch.utils.data
 import torchvision
 from PIL import Image
 from pycocotools.coco import COCO
+import numpy as np
+import cv2
 
 class CocoDataset(torch.utils.data.Dataset):
     def __init__(self, root, annotation,
         transform=None, target_transform=None, isTrain=True):
 
         if isTrain:
-            self.root     = root + str("train_2017/")
+            self.root     = root + str("train2017/")
             self.annpath  = root + str("annotations/instances_train2017.json")
         else:
-            self.root     = root + str("val_2017/")
+            self.root     = root + str("val2017/")
             self.annpath  = root + str("annotations/instances_val2017.json")     
         print(self.root)
         print(self.annpath)
@@ -56,7 +58,10 @@ class CocoDataset(torch.utils.data.Dataset):
         # path for input image
         path = coco.loadImgs(img_id)[0]['file_name']
         # open the input image
-        img = Image.open(os.path.join(self.root, path))
+        #img = Image.open(os.path.join(self.root, path))
+
+        img = cv2.imread(os.path.join(self.root, path))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # number of objects in the image
         num_objs = len(coco_annotation)
@@ -65,6 +70,8 @@ class CocoDataset(torch.utils.data.Dataset):
         # In coco format, bbox = [xmin, ymin, width, height]
         # In pytorch, the input should be [xmin, ymin, xmax, ymax]
         boxes = []
+        labels = []
+
         for i in range(num_objs):
             xmin = coco_annotation[i]['bbox'][0]
             ymin = coco_annotation[i]['bbox'][1]
@@ -74,8 +81,8 @@ class CocoDataset(torch.utils.data.Dataset):
             boxes.append([xmin, ymin, xmax, ymax])
 
             entity_id = coco_annotation[i]["category_id"]
-            entity = coco.loadCats(entity_id)[0]["name"]
-            labels.append(entity)
+            #entity = coco.loadCats(entity_id)[0]["name"]
+            labels.append(entity_id)
         
         '''
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
@@ -104,7 +111,7 @@ class CocoDataset(torch.utils.data.Dataset):
         labels = np.array(labels, dtype=np.int64)
 
         if self.transform:
-            image, boxes, labels = self.transform(image, boxes, labels)
+            img, boxes, labels = self.transform(img, boxes, labels)
         if self.target_transform:
             boxes, labels = self.target_transform(boxes, labels)
 
